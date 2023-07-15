@@ -1,0 +1,10 @@
+export const SET_CITY_ID = 'SET_CITY_ID';
+export const SET_USER = 'SET_USER';
+
+export const SET_CITY_STATUS = 'SET_CITY_STATUS';
+
+export const SET_COUPON_LIST = 'SET_COUPON_LIST';
+export const SET_PARKING_LIST = 'SET_PARKING_LIST';
+export const SET_CAR_LIST = 'SET_CAR_LIST';
+
+export const SET_PURCHASED_COUPONS = 'SET_PURCHASED_COUPONS';
