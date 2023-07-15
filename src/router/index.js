@@ -4,14 +4,34 @@ import HomeView from '../views/HomeView.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: HomeView
   },
   {
-    path: '/about',
-    name: 'about',
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/operation_manage',
+    name: 'OperateManage',
+    component: () => import(/* webpackChunkName: "OperateManage" */ '../views/OperateManageView.vue')
+  },
+  {
+    path: '/warning_manage',
+    name: 'WarningManage',
+    component: () => import(/* webpackChunkName: "WarningManage" */ '../views/OperateManageView.vue')
+  },
+  {
+    path: '/preplan_manage',
+    name: 'PreplanManage',
+    component: () => import(/* webpackChunkName: "PreplanManage" */ '../views/OperateManageView.vue')
+  },
+  {
+    path: '/maintenance_manage',
+    name: 'MaintenanceManage',
+    component: () => import(/* webpackChunkName: "MaintenanceManage" */ '../views/OperateManageView.vue')
+  },
+  {
+    path: '/setting_manage',
+    name: 'SettingManage',
+    component: () => import(/* webpackChunkName: "SettingManage" */ '../views/OperateManageView.vue')
+  },
 ]
 
 const router = createRouter({
