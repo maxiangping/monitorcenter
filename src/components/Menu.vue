@@ -50,7 +50,6 @@ export default {
 
     const handleClickMenu = (value) => {
       if(ctx.currentPage === value) return
-      console.log(value)
       router.push({
         name: value
       })
@@ -124,6 +123,7 @@ export default {
   background: url('~@/assets/img/icon_arrow.png') 100% center no-repeat;
   cursor: pointer;
   margin-left: -9px;
+  animation: move 2s infinite;
 }
 .hide-menu {
   background: none;
@@ -133,6 +133,47 @@ export default {
   }
   .menu-list {
     display: none;
+  }
+}
+
+@keyframes move{
+  0% {
+    top: 16px;
+  }
+
+  50% {
+    top: 24px;
+  }
+
+  100% {
+    top: 16px;
+  }
+}
+@-webkit-keyframes move {
+   0% {
+    top: 16px;
+  }
+
+  50% {
+    top: 24px;
+  }
+
+  100% {
+    top: 16px;
+  }
+}
+
+@-moz-keyframes move {
+  0% {
+    top: 16px;
+  }
+
+  50% {
+    top: 24px;
+  }
+
+  100% {
+    top: 16px;
   }
 }
 </style>

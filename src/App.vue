@@ -11,4 +11,13 @@
   width: 100%;
   height: 100%;
 }
+::-webkit-scrollbar {
+    width: 0;
+ }
+
+::-webkit-scrollbar-thumb {
+    box-sizing: border-box;
+    border: 0 solid transparent;
+    box-shadow: none;
+  }
 </style>
