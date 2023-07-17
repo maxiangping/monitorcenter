@@ -107,8 +107,8 @@
             <div class="box h5">
               <div class="box-inner">
                 <div class="box-header">
-                  <h4 class="box-title" @click="handleToGoPage('RealtimeMonitor')">实时监控</h4>
-                  <span class="box-more">更多</span>
+                  <h4 class="box-title">实时监控</h4>
+                  <span class="box-more"  @click="handleToGoPage('RealtimeMonitor')">更多</span>
                 </div>
                 <div class="box-content flex x-axis-center">
                   <ul class="monitor-info-list  flex xy-axis-center">

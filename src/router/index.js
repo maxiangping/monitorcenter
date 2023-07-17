@@ -32,6 +32,12 @@ const routes = [
     name: 'SettingManage',
     component: () => import(/* webpackChunkName: "SettingManage" */ '../views/OperateManageView.vue')
   },
+  {
+    path: '/realtime_monitor',
+    name: 'RealtimeMonitor',
+    component: () => import(/* webpackChunkName: "RealtimeMonitor" */ '../views/RealtimeMonitorView.vue')
+  },
+  
 ]
 
 const router = createRouter({
