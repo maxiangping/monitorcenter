@@ -30,7 +30,7 @@ const routes = [
   {
     path: '/setting_manage',
     name: 'SettingManage',
-    component: () => import(/* webpackChunkName: "SettingManage" */ '../views/OperateManageView.vue')
+    component: () => import(/* webpackChunkName: "SettingManage" */ '../views/SettingManageView.vue')
   },
   {
     path: '/realtime_monitor',
