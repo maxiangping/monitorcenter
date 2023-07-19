@@ -2,6 +2,22 @@
   <div class="container bg-main">
     <div class="container-inner flex -column">
       <Header/>
+      <section class="search-box flex x-space-between">
+        <n-select
+          class="search-item"
+              v-model:value="ipValue"
+              placeholder="请选择IP段"
+              :options="ipOptions"
+              @change="changeIp"
+            />
+        <div class="warning-info">
+          <p class="warning-text">
+            <img :src="warningIcon" alt="" class="icon"/>
+            <span class="text">{{ warningCenterInfo }}</span>
+          </p>
+        </div>
+        <div class="search-item-w"></div>
+      </section>
       <section class="content">
         <div class="col left">
           <div class="col-inner">
@@ -138,8 +154,9 @@
 import Header from '@/components/Header.vue'
 import Menu from '@/components/Menu.vue'
 import { useRouter } from 'vue-router'
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import equitIcon from '@assets/img/equit_icon.png'
+import warningIcon from '@assets/img/warning_icon.png'
 
 
 export default {
@@ -149,6 +166,10 @@ export default {
     Menu,
   },
   setup() {
+    const ipOptions = ref([])
+    const ipValue = ref('')
+
+
     const router = useRouter()
 
     // 设备信息
@@ -176,44 +197,46 @@ export default {
     const eventWarningList = ref([])
   // 监控摄像头列表
     const monitorList = ref([])
+
+    const warningCenterInfo = ref('')
     
-
-
+    
     const handleToGoPage = (pageName, type = -1)=>{
       const params = {}
       if(type !== -1 ){
-          params.type = type
+        params.type = type
       }
       router.push({
         name: pageName,
         params
       })
     }
-    return {
-      handleToGoPage,
-      equipmentInfo,
-      equitIcon,
-      equitWarningInfo,
-      equitWarningList,
-      eventWarningInfo,
-      eventWarningList,
-      monitorList,
+    const changeIp = () =>{
+      console.log(ipValue)
     }
-  },
-  mounted() {
-    this.equitWarningList = [
+    onMounted(() =>{
+      ipValue.value = '172.16.163.1'
+
+      ipOptions.value = [
+        {label: '172.16.163.1',value: '172.16.163.1'},
+        {label: '172.16.163.2',value: '172.16.163.2'},
+        {label: '172.16.163.3',value: '172.16.163.3'},
+      ]
+
+      warningCenterInfo.value = '1号隧道火灾告警提示！'
+    equitWarningList.value = [
       { type: 1,equitName: '温度设备', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 2,equitName: '风机', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 1,equitName: '温度设备', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 3,equitName: '指示灯', address:'1号隧道',  time: '2023-19-90 02:23:43'},
     ]
-     this.eventWarningList = [
+     eventWarningList.value = [
       { type: 1,equitName: '火灾告警', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 2,equitName: '交通事故', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 1,equitName: '火灾告警', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 3,equitName: '交通事故', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
     ]
-    this.monitorList = [
+    monitorList.value = [
       {
         name: '左隧道',
         monitors: [{url: '', monitorName: '摄像头-01'},{url: '', monitorName: '摄像头-02'},],
@@ -223,8 +246,23 @@ export default {
         monitors: [{url: '', monitorName: '摄像头-03'},{url: '', monitorName: '摄像头-04'},],
       },
     ]
-    
-  }
+  })
+    return {
+      handleToGoPage,
+      equipmentInfo,
+      equitIcon,
+      equitWarningInfo,
+      equitWarningList,
+      eventWarningInfo,
+      eventWarningList,
+      monitorList,
+      ipOptions,
+      ipValue,
+      changeIp,
+      warningIcon,
+      warningCenterInfo,
+    }
+  },
 }
 </script>
 <style scoped lang="less">
@@ -460,5 +498,47 @@ export default {
     }
   }
 }
-
+.search-box {
+  padding: 0 12px;
+  margin-bottom: 20px;
+}
+.search-item {
+  width: 295px;
+  background: url('~@/assets/img/select_bg.png') center no-repeat;
+  background-size: 100% 100%;
+}
+.search-item-w {
+  width: 295px;
+}
+.warning-info {
+  width: 33%;
+  background: url('~@/assets/img/warning_center_bg.png') center no-repeat;
+  background-size: 100% 100%;
+  height: 62px;
+}
+.warning-text {
+  text-align: cener;
+  line-height: 62px;
+  .icon {
+    position: relative;
+    top: -5px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .text {
+    font-size: 17px;
+    font-weight: 400;
+    color: #FE5578;
+    line-height: 35px;
+  }
+}
+::v-deep{
+  .n-base-selection {
+    height: 100%;
+  }
+  .n-base-selection .n-base-selection-label {
+    height: 100%;
+    background: none;
+  }
+}
 </style>
