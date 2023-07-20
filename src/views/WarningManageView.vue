@@ -38,7 +38,7 @@
           <div class="detail-content" v-if="currentItem">
             <h5 class="model-title">{{ warningSearchForm.warningType === 1 ? '事件信息' : '设备信息' }}</h5>
             <ul class="info-list flex -row">
-              <li class="inof-item w-50" v-for="(columnI, index) in detailColumn" :key="index">
+              <li class="info-item w-50" v-for="(columnI, index) in detailColumn" :key="index">
                 <label class="label">{{ columnI.title }}：</label>
                 <span class="text" v-if="columnI.title !== '处理状态'">{{ currentItem[columnI.key] }}</span>
                 <n-tag class="tag" v-else
@@ -48,11 +48,11 @@
             </ul>
             <h5 class="model-title">处理信息</h5>
             <ul class="info-list">
-              <li class="inof-item" >
+              <li class="info-item" >
                 <label class="label">处理时间：</label>
                 <span class="text">{{ currentItem.dealTime }}</span>
               </li>
-              <li class="inof-item" >
+              <li class="info-item" >
                 <label class="label">描述：</label>
                 <span class="text">{{ currentItem.desc }}</span>
               </li>
@@ -70,7 +70,7 @@
           <div class="detail-content" v-if="currentItem">
             <h5 class="model-title">{{ warningSearchForm.warningType === 1 ? '事件信息' : '设备信息' }}</h5>
             <ul class="info-list flex -row">
-              <li class="inof-item w-50" v-for="(columnI, index) in detailColumn" :key="index">
+              <li class="info-item w-50" v-for="(columnI, index) in detailColumn" :key="index">
                 <label class="label">{{ columnI.title }}：</label>
                 <span class="text" v-if="columnI.title !== '处理状态'">{{ currentItem[columnI.key] }}</span>
                 <n-tag class="tag" v-else
@@ -80,7 +80,7 @@
             </ul>
             <h5 class="model-title">处理信息</h5>
             <ul class="info-list">
-              <li class="inof-item" >
+              <li class="info-item" >
                 <!-- <label class="label">描述：</label> -->
                 <n-input
                   v-model:value="dealDetail"
@@ -393,7 +393,7 @@ export default {
   padding-left: 10px;
   margin: 20px 0;
 }
-.inof-item {
+.info-item {
   line-height: 30px;
   &.w-50 {
     width: 50%;

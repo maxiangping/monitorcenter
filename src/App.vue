@@ -73,7 +73,7 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif, Source Han Sans CN;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  // text-align: center;
   width: 100%;
   height: 100%;
 }

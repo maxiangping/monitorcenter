@@ -99,7 +99,7 @@ export default {
 
 }
 .menu-item-inner {
-  margin: 0 20px;
+  margin: 0 10%;
   height: 40px;
   line-height: 40px;
   color: @main-color1;

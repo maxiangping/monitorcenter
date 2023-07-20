@@ -4,7 +4,7 @@
       <Header/>
       <section class="search-box flex x-space-between">
         <n-select
-          class="search-item"
+          class="search-item-ip"
               v-model:value="ipValue"
               placeholder="请选择IP段"
               :options="ipOptions"
@@ -16,7 +16,7 @@
             <span class="text">{{ warningCenterInfo }}</span>
           </p>
         </div>
-        <div class="search-item-w"></div>
+        <div class="search-item-ip-w"></div>
       </section>
       <section class="content">
         <div class="col left">
@@ -81,7 +81,10 @@
         </div>
         <div class="col center">
           <div class="col-inner">
-            <div class="box h3"></div>
+            <div class="box h3">
+              <n-button class="btn-check" type="primary" @click="handlCheck">巡检</n-button>
+            </div>
+            <div class="box h6"></div>
           </div>
 
         </div>
@@ -214,6 +217,10 @@ export default {
     const changeIp = () =>{
       console.log(ipValue)
     }
+
+    const handlCheck = () => {
+      //巡检
+    }
     onMounted(() =>{
       ipValue.value = '172.16.163.1'
 
@@ -261,6 +268,7 @@ export default {
       changeIp,
       warningIcon,
       warningCenterInfo,
+      handlCheck,
     }
   },
 }
@@ -288,10 +296,14 @@ export default {
 .h1 { height: 38%; background-image: url('~@/assets/img/bg-1.png'); }
 .h2 { height: 58%; background-image: url('~@/assets/img/bg-2.png');}
 .h3 { 
-  height: 86%; 
+  position: relative;
+  height: 56%; 
   background-color: rgba(8,16,80,0.62);
   border: 1px solid #397EF7;
   border-radius: 10px;
+}
+.h6 {
+  height: 30%;
 }
 .h4 { height: 52%; background-image: url('~@/assets/img/bg-3.png');}
 .h5 { height: 44%; background-image: url('~@/assets/img/bg-4.png');}
@@ -502,12 +514,12 @@ export default {
   padding: 0 12px;
   margin-bottom: 20px;
 }
-.search-item {
+.search-item-ip {
   width: 295px;
   background: url('~@/assets/img/select_bg.png') center no-repeat;
   background-size: 100% 100%;
 }
-.search-item-w {
+.search-item-ip-w {
   width: 295px;
 }
 .warning-info {
@@ -540,5 +552,19 @@ export default {
     height: 100%;
     background: none;
   }
+  .n-button .n-button__content {
+    color: @main-color1;
+  }
+  .n-button:not(.n-button--disabled):hover {
+    background: none;
+  }
 }
+.btn-check  {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: url('~@/assets/img/select_bg.png') center no-repeat;
+  background-size: 100% 100%;
+}
+
 </style>

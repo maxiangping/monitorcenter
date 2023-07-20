@@ -25,7 +25,7 @@ const routes = [
   {
     path: '/maintenance_manage',
     name: 'MaintenanceManage',
-    component: () => import(/* webpackChunkName: "MaintenanceManage" */ '../views/OperateManageView.vue')
+    component: () => import(/* webpackChunkName: "MaintenanceManage" */ '../views/MaintenanceManageView.vue')
   },
   {
     path: '/setting_manage',

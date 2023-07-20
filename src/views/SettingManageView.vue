@@ -103,6 +103,9 @@ export default {
 }
 </script>
 <style scoped lang="less">
+.container-inner {
+  padding-bottom: 0;
+}
 .content,.box-content {
   flex: auto;
   height: 0;
@@ -142,9 +145,6 @@ export default {
   color: @main-color1;
   text-align: left;
   font-weight: bold;
-}
-.menu-title-2 {
-  font-size: 16px;
 }
 .version {
   font-size: 40px;
