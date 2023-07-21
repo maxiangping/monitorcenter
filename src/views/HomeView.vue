@@ -8,7 +8,7 @@
               v-model:value="ipValue"
               placeholder="请选择IP段"
               :options="ipOptions"
-              @change="changeIp"
+              @update:value="changeIp"
             />
         <div class="warning-info">
           <p class="warning-text">
@@ -63,7 +63,7 @@
                       <p class="deal-num">{{equitWarningInfo.noDeal}}</p>
                     </figure>
                   </ul>
-                   <ul class="warning-list" v-if="equitWarningList.length>0">
+                  <ul class="warning-list" v-if="equitWarningList.length>0">
                     <figure class="warning-item" v-for="(item,index) in equitWarningList" :key="index">
                       <figcaption class="warning-title">
                         <span class="deal-icon " :class="`${item.type === 1 ? 'success' : 'warning'}`"></span>
@@ -82,9 +82,34 @@
         <div class="col center">
           <div class="col-inner">
             <div class="box h3">
+              <n-select
+                class="search-item-symbel"
+                    v-model:value="symbelValue"
+                    placeholder="请选择设备"
+                    :options="symbelOptions"
+                    @update:value="changeSymbel"
+                  />
               <n-button class="btn-check" type="primary" @click="handlCheck">巡检</n-button>
+
+              <div class="symbel-item" v-for="(sItem, index) in symbelList" :key="index" :style="{left: `${sItem.x}px`, top: `${sItem.y}%`}" @click="() =>handleClickItem(sItem)">
+                <img class="item-img" v-if="!currentItem || (currentItem &&sItem.id !== currentItem.id)" :src="sItem.icon" />
+                <img class="item-img" v-if="currentItem && sItem.id === currentItem.id" :src="sItem.icon_active" />
+              </div>
+              <div class="pop-symbel" v-if="showPop && currentItem" :style="{left: `${currentItem.x + 66}px`, top: `${currentItem.y}%`}">
+                  <div class="pop-inner">
+                    <h4 class="pop-title">{{currentItem.name}}</h4>
+                    <n-icon class="pop-close" size="30" @click="handleCloseItem">
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M368 368L144 144"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M368 144L144 368"></path></svg>
+                    </n-icon>
+                    <ul class="info-list">
+                      <li class="info-item" v-for="(columnI, index) in currentItem.info" :key="index">
+                        <label class="label">{{ columnI.label }}：</label>
+                        <span class="text" >{{ columnI.value }}</span>
+                      </li>
+                    </ul>
+                  </div>
+              </div>
             </div>
-            <div class="box h6"></div>
           </div>
 
         </div>
@@ -117,7 +142,6 @@
                         <span class="warning-text">{{item.address}}</span>
                         <span class="warning-text">{{item.time}}</span>
                       </div>
-                      
                     </figure>
                   </ul>
                 </div>
@@ -160,6 +184,37 @@ import { useRouter } from 'vue-router'
 import { reactive, ref, onMounted } from 'vue'
 import equitIcon from '@assets/img/equit_icon.png'
 import warningIcon from '@assets/img/warning_icon.png'
+import { IoSymbles, initXY } from './conf/sceneUtil'
+import icon_1 from '@assets/img/1.png'
+import icon_1_active from '@assets/img/1_active.png'
+import icon_4 from '@assets/img/4.png'
+import icon_4_active from '@assets/img/4_active.png'
+import icon_4_1 from '@assets/img/4_1.png'
+import icon_4_1_active from '@assets/img/4_1_active.png'
+import icon_5 from '@assets/img/5.png'
+import icon_5_active from '@assets/img/5_active.png'
+import icon_6 from '@assets/img/6.png'
+import icon_6_active from '@assets/img/6_active.png'
+import icon_6_1 from '@assets/img/6_1.png'
+import icon_6_1_active from '@assets/img/6_1_active.png'
+import icon_7 from '@assets/img/7.png'
+import icon_7_active from '@assets/img/7_active.png'
+import icon_9 from '@assets/img/9.png'
+import icon_9_active from '@assets/img/9_active.png'
+import icon_11 from '@assets/img/11.png'
+import icon_11_active from '@assets/img/11_active.png'
+import icon_12 from '@assets/img/12.png'
+import icon_12_active from '@assets/img/12_active.png'
+import icon_12_1 from '@assets/img/12_1.png'
+import icon_12_1_active from '@assets/img/12_1_active.png'
+import icon_13 from '@assets/img/13.png'
+import icon_13_active from '@assets/img/13_active.png'
+import icon_14 from '@assets/img/14.png'
+import icon_14_active from '@assets/img/14_active.png'
+import icon_COVI from '@assets/img/COVI.png'
+import icon_COVI_active from '@assets/img/COVI_active.png'
+import icon_NO2 from '@assets/img/NO2.png'
+import icon_NO2_active from '@assets/img/NO2_active.png'
 
 
 export default {
@@ -171,6 +226,13 @@ export default {
   setup() {
     const ipOptions = ref([])
     const ipValue = ref('')
+    const symbelValue = ref('') 
+    const symbelOptions =  Object.keys(IoSymbles).map(key => {
+      return {
+        label: IoSymbles[key],
+        value: key,
+      }
+    })
 
 
     const router = useRouter()
@@ -202,6 +264,11 @@ export default {
     const monitorList = ref([])
 
     const warningCenterInfo = ref('')
+
+    const symbelList = ref([])
+
+    const currentItem = ref(null)
+    const showPop = ref(false)
     
     
     const handleToGoPage = (pageName, type = -1)=>{
@@ -221,6 +288,75 @@ export default {
     const handlCheck = () => {
       //巡检
     }
+
+    const changeSymbel = () => {
+
+    }
+
+    const getIcon = (name, afterStr = '') => {
+      switch(name) {
+        case '2显车道指示器':
+        case '4显车道指示器':
+        case '6显车道指示器':
+          return  afterStr === '' ? icon_1 : icon_1_active
+        case '单面左转指示器':
+        case '双面左转指示器':
+          return  afterStr === '' ? icon_4_1 : icon_4_1_active
+        case '横洞指示器':
+          return  afterStr === '' ? icon_6_1 : icon_6_1_active
+        case '3显信号灯':
+        case '4显信号灯':
+          return  afterStr === '' ? icon_7 : icon_7_active
+        case '射流风机':
+        case '排送风机':
+          return  afterStr === '' ? icon_9 : icon_9_active
+        case '照明':
+          return  afterStr === '' ? icon_11 : icon_11_active
+          case '水泵':
+          return  afterStr === '' ? icon_12_1 : icon_12_1_active
+        case '车通卷帘门':
+          return  afterStr === '' ? icon_13 : icon_13_active
+        case '人通防火门':
+          return  afterStr === '' ? icon_14 : icon_14_active
+        case 'COVI':
+          return  afterStr === '' ? icon_COVI : icon_COVI_active
+        case 'NO2':
+          return  afterStr === '' ? icon_NO2 : icon_NO2_active
+        case 'COVI/NO2':
+          return  afterStr === '' ? icon_COVI : icon_COVI_active
+        case '风速风向':
+          return  afterStr === '' ? icon_4 : icon_4_active
+        case '洞内光强':
+          return  afterStr === '' ? icon_5 : icon_5_active
+        case '洞外光强':
+          return  afterStr === '' ? icon_6 : icon_6_active
+        case '车检器':
+          return  afterStr === '' ? icon_12 : icon_12_active
+        default:
+          break;
+      }
+      return ''
+    }
+
+    const handleClickItem = (item) => {
+      
+      if(currentItem.value && currentItem.value.id === item.id ) {
+        showPop.value = false
+        currentItem.value = null
+        return
+      }
+      showPop.value = true
+      currentItem.value = item
+    }
+
+    const handleCloseItem = () => {
+      showPop.value = false
+      currentItem.value = null
+    }
+
+    const getXY = (index) => {
+      return initXY[index] ?? { x: 0, y: 0 }
+    }
     onMounted(() =>{
       ipValue.value = '172.16.163.1'
 
@@ -237,7 +373,7 @@ export default {
       { type: 1,equitName: '温度设备', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 3,equitName: '指示灯', address:'1号隧道',  time: '2023-19-90 02:23:43'},
     ]
-     eventWarningList.value = [
+    eventWarningList.value = [
       { type: 1,equitName: '火灾告警', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 2,equitName: '交通事故', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
       { type: 1,equitName: '火灾告警', typeName: '紧急告警', address:'1号隧道',  time: '2023-19-90 02:23:43'},
@@ -253,6 +389,28 @@ export default {
         monitors: [{url: '', monitorName: '摄像头-03'},{url: '', monitorName: '摄像头-04'},],
       },
     ]
+    symbelList.value = Object.keys(IoSymbles).concat(Object.keys(IoSymbles)).map((key,index) => {
+      const position = getXY(index)
+      return {
+        id: key + `111`,
+        type: key,
+        name: IoSymbles[Number(key)],
+        icon: getIcon(IoSymbles[key]),
+        icon_active: getIcon(IoSymbles[key],'active'),
+        x: position.x,
+        y: position.y,
+        info: [
+          {label: '设备编号', value: IoSymbles[key]},
+          {label: '设备桩号', value: '09'},
+          {label: '设备方向', value: '左方向'},
+          {label: '正面状态', value: '正常'},
+          {label: '背面状态', value: '正常'},
+          {label: '通讯状态', value: '通讯正常'},
+          {label: '故障状态', value: '正常'},
+          {label: '故障描述', value: '正常'},
+        ]
+      }
+    })
   })
     return {
       handleToGoPage,
@@ -269,6 +427,14 @@ export default {
       warningIcon,
       warningCenterInfo,
       handlCheck,
+      symbelValue, 
+      symbelOptions,
+      changeSymbel,
+      symbelList,
+      handleClickItem,
+      currentItem,
+      handleCloseItem,
+      showPop,
     }
   },
 }
@@ -297,13 +463,10 @@ export default {
 .h2 { height: 58%; background-image: url('~@/assets/img/bg-2.png');}
 .h3 { 
   position: relative;
-  height: 56%; 
+  height: 86%; 
   background-color: rgba(8,16,80,0.62);
   border: 1px solid #397EF7;
   border-radius: 10px;
-}
-.h6 {
-  height: 30%;
 }
 .h4 { height: 52%; background-image: url('~@/assets/img/bg-3.png');}
 .h5 { height: 44%; background-image: url('~@/assets/img/bg-4.png');}
@@ -514,10 +677,17 @@ export default {
   padding: 0 12px;
   margin-bottom: 20px;
 }
-.search-item-ip {
+.search-item-ip , .search-item-symbel{
   width: 295px;
   background: url('~@/assets/img/select_bg.png') center no-repeat;
   background-size: 100% 100%;
+}
+.search-item-symbel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 50px;
+  width: 182px;
 }
 .search-item-ip-w {
   width: 295px;
@@ -565,6 +735,57 @@ export default {
   right: 24px;
   background: url('~@/assets/img/select_bg.png') center no-repeat;
   background-size: 100% 100%;
+}
+.symbel-item {
+  position: absolute;
+  width: 61px;
+  height: 61px;
+  cursor: pointer;
+  .item-img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.pop-symbel {
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  background: rgba(0,0,0,0.7);
+  border-radius: 4px;
+  width: 275px;
+  z-index: 666;
+  .pop-inner {
+    padding: 20px;
+  }
+  .pop-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: @main-color2;
+    margin-bottom: 10px;
+  }
+  .pop-close {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    cursor: pointer;
+    color: @main-color2;
+  }
+}
+.info-item {
+  line-height: 30px;
+  .label {
+    width: 40%;
+    display: inline-block;
+  }
+  .label , .text {
+    color: #fff;
+    font-size: 16px;
+  }
+  .text {
+    display: inline-block;
+    width: 60%;
+    text-align: right;
+  }
 }
 
 </style>
