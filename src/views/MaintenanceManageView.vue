@@ -2,7 +2,7 @@
   <div class="container bg-main">
     <div class="container-inner flex -column">
       <Header/>
-      <section class="content flex -column">
+      <section v-if="editType === 0" class="content flex -column">
         <div class="search-box flex x-space-between">
           <n-select
               class="search-item-ip"
@@ -63,6 +63,107 @@
           </n-grid>
         </div>
       </section>
+      <section v-if="editType >= 1" class="content flex -column eidt-scene">
+        <div class="search-box flex x-space-between">
+          <n-select
+              class="search-item-ip"
+              v-model:value="symble"
+              placeholder="请选择设备"
+              :options="IoSymblesOption"
+              @update:value="onChangeSymble"
+            />
+            <div class="btn-list">
+              <n-button type="primary"  @click="editSave" class="mr-10">
+                保存
+                </n-button>
+                <n-button   @click="editCancel">
+                  取消
+                </n-button>
+            </div>
+            
+        </div>
+        <div class="box-content flex xy-axis-center">
+          <n-grid x-gap="24" cols="4" item-responsive>
+            
+            <n-grid-item span="0 400:1 600:2 800:3">
+                <div class="box-inner">
+                  <h5 class="model-title">指令信息</h5>
+                  <NSpace vertical>
+                    <NGrid xGap="24" cols="24">
+                      <NGi span="8">
+                        <NGradientText>2显车道指示器</NGradientText>
+                      </NGi>
+                      <NGi span="16">
+                        <NSpace inline align="end" justify="end" :style="{ width: '100%' }">
+                          <NInput v-model:value="vmodel.coord"  :style="{ width: '100%' }" placeholder='段位' />
+                          <NSelect
+                            v-model:value="vmodel.attr"
+                            @update:value="(value) => changeItem(value, index)"
+                            :options={attrOptions}
+                            :style="{ width: '130px' }"
+                            placeholder="控制类型"
+                          />
+                          <NSelect
+                            v-model:value="vmodel.symble"
+                            :options="dynOptions"
+                            :style="{ width: '150px' }"
+                            placeholder='场景'
+                          />
+
+                          <NButton
+                            @renderIcon="() => h(NIcon, null, { default: () => h(DeleteOutlined) })"
+                            @click="() => scenesModel.splice(index, 1)"
+                          />
+                        </NSpace>
+                      </NGi>
+                    </NGrid>
+
+                    <NGrid xGap={24} cols={24}>
+                      <NGi span={6}>
+                        <NSpace vertical>
+                          <NText>正红控制</NText>
+                          <NSelect v-model:value="vmodel.q1" :options="qoptions" placeholder='请选择' />
+                        </NSpace>
+                      </NGi>
+                      <NGi span={6}>
+                        <NSpace vertical>
+                          <NText>正绿控制</NText>
+                          <NSelect v-model:value="vmodel.q2" :options="qoptions" placeholder='请选择' />
+                        </NSpace>
+                      </NGi>
+                      <NGi span={6}>
+                        <NSpace vertical>
+                          <NText>正红反馈</NText>
+                          <NSelect v-model:value="vmodel.i1" :options="ioptions" placeholder='请选择' />
+                        </NSpace>
+                      </NGi>
+                      <NGi span={6}>
+                        <NSpace vertical>
+                          <NText>正绿反馈</NText>
+                          <NSelect v-model:value="vmodel.i2" :options="ioptions" placeholder='请选择' />
+                        </NSpace>
+                      </NGi>
+                    </NGrid>
+                  </NSpace>
+                  <h5 class="model-title">反馈信息</h5>
+                  <ul class="info-list flex -row">
+                    <li class="info-item w-50" v-for="(columnI, index) in detailColumn" :key="index">
+                      <label class="label">{{ columnI.label }}：</label>
+                      <span class="text" >{{ columnI.value }}</span>
+                    </li>
+                  </ul>
+                  
+                </div>
+            </n-grid-item>
+            <n-grid-item>
+              <h5 class="model-title">设备操作</h5>
+                  <ul class="btn-list">
+                      <n-button class="btn-item" v-for="(btnI, i) in detailBtn" :key="i" type="primary">{{ btnI.label }}</n-button>
+                  </ul>
+            </n-grid-item>
+          </n-grid>
+        </div>
+      </section>
       <Menu currentPage="MaintenanceManage"/>
     </div>
   </div>
@@ -74,7 +175,26 @@ import Header from '@/components/Header.vue'
 import { useRouter } from 'vue-router'
 import Menu from '@/components/Menu.vue'
 
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, h } from 'vue'
+import { useDialog, useMessage } from "naive-ui";
+import { IoSymbles, AttrType,addrVarOptions,
+  anaVarOptions,
+  attrOptions,
+  deSerialToScene,
+  funcCodeOptions,
+  getOtherSymbles,
+  ioOptions,
+  notIoOptions,
+  portOptions,
+  serialToDrivsUint16,
+  serialToUint16, } from './conf/sceneUtil'
+import { DeleteOutlined } from '@vicons/material'
+
+const range = (start, end) => {
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+}
+
+
 
 export default {
   name: 'MaintenanceManageView',
@@ -84,12 +204,52 @@ export default {
   },
   setup() {
     const router = useRouter()
+    const dialog = useDialog()
+    const message = useMessage()
+
+    const getCnt = (version) => {
+      if (version === '241') {
+        return 6
+      } else if (version === '242') {
+        return 15
+      } else if (version === '243') {
+        return 16
+      }
+      return 48
+    }
+
+    const editType  = ref(0)
 
     const ipOptions = ref([])
     const ipValue = ref('')
 
     const treeData = ref([])
     const defaultExpandedKeys = ref([])
+    const vmodel = ref({})
+
+    const scenesModel = ref([])
+
+    // const qoptions = range(512, 512 + getCnt(ctx.version)).map((v) => ({
+    //   label: `Q${v - 511}(寄存器地址${v})`,
+    //   value: v,
+    // }))
+    // const ioptions = range(0, getCnt(ctx.version)).map((v) => ({ label: `I${v + 1}(寄存器地址${v})`, value: v }))
+    // const aoptions = range(0, getACnt(ctx.version)).map((v) => ({
+    //   label: `A${v + 1}(寄存器地址${v + 128})`,
+    //   value: v + 128,
+    // }))
+
+    // qoptions.unshift({ label: '无', value: 30000 })
+    // ioptions.unshift({ label: '无', value: 30000 })
+
+    
+    const IoSymblesOption = Object.keys(IoSymbles).map(key => {
+      return {
+        label: IoSymbles[key],
+        value: key,
+      }
+    })
+    const symble = ref(1)
 
     const detailColumn = computed(() => {
       return [
@@ -109,6 +269,65 @@ export default {
       ]
     })
 
+    const changeItem = (attr, index) => {
+        if (attr === AttrType.IoControl) {
+          scenesModel[index] = {
+            index: scenesModel.length,
+            attr: AttrType.IoControl,
+            symble: 1,
+            coord: 'K001',
+            q1: 512,
+            q2: 513,
+            i1: 0,
+            i2: 0,
+          }
+        }
+        if (attr === AttrType.RS485) {
+          scenesModel[index] = {
+            index: 1,
+            symble: 1,
+            attr: AttrType.RS485,
+            coord: 'k001',
+            port: 1,
+            fn_code: 1,
+            slave_id: 1,
+            master_addr: 3000,
+            addr_vars: [],
+          }
+        }
+
+        if (attr === AttrType.Analog) {
+          scenesModel[index] = {
+            index: 1,
+            symble: 1,
+            attr: AttrType.Analog,
+            coord: 'k001',
+            ang_vars: [],
+          } 
+        }
+
+        if (attr === AttrType.Mixins) {
+          scenesModel[index] = {
+            index: 1,
+            symble: 1,
+            attr: AttrType.Mixins,
+            coord: 'k001',
+            port: 1,
+            fn_code: 1,
+            slave_id: 1,
+            master_addr: 3000,
+            addr_vars: [],
+            ang_vars: [],
+          }
+        }
+      }
+      const dynOptions = computed(() => {
+        if (vmodel.attr === AttrType.IoControl) {
+          return ioOptions
+        } else {
+          return notIoOptions
+        }
+      })
       
     const initData = async () => {
       treeData.value = [
@@ -171,12 +390,50 @@ export default {
       }
 
       const addSene = () => {
-         
+        editType.value = 1
       }
       const editSene = () => {
+        editType.value = 2
+        vmodel = {
+          index: 1,
+          symble: -1,
+          attr:  -1,
+          coord: '',
+          q1:  -1,
+          q2:  -1,
+          q3:  -1,
+          q4:  -1,
+          i1:  -1,
+          i2:  -1,
+          i3:  -1,
+          i4:  -1,
+        }
+      }
+      const editCancel = () => {
+        editType.value = 0
+      }
+
+      const onChangeSymble = () => {
+
+      }
+
+      const editSave = () => {
 
       }
       const deleteSene = () => {
+        dialog.warning({
+          title: '提示',
+          content: '您确定删除吗？',
+          positiveText: '确定',
+          negativeText: '取消',
+          onPositiveClick: () => {
+            console.log(row)
+            message.success('操作成功')
+          },
+          onNegativeClick: () => {
+            // message.error('取消')
+          }
+        })
 
       }
 
@@ -208,6 +465,19 @@ export default {
       search,
       editSene,
       deleteSene,
+      editType,
+      editCancel,
+      IoSymblesOption,
+      onChangeSymble,
+      symble,
+      editSave,
+      vmodel,
+      changeItem,
+      dynOptions,
+      h,
+      // qoptions, 
+      // ioptions, 
+      // aoptions,
     }
   },
 }
@@ -244,7 +514,7 @@ export default {
 .search-box {
   margin-bottom: 20px;
 }
-.search-item-ip {
+.search-item-ip , .n-select{
   width: 295px;
   background: url('~@/assets/img/select_bg.png') center no-repeat;
   background-size: 100% 100%;
@@ -268,6 +538,9 @@ export default {
   }
   .n-base-selection .n-base-selection-label {
     background: none;
+  }
+  .n-button--default-type {
+    color: #fff;
   }
 }
 .menu-title {
@@ -317,5 +590,8 @@ export default {
 }
 .edit-icon {
   right: 40px;
+}
+.btn-list .mr-10 {
+  margin-right: 10px;
 }
 </style>
