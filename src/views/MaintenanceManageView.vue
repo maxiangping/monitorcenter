@@ -518,6 +518,11 @@ export default {
   width: 295px;
   background: url('~@/assets/img/select_bg.png') center no-repeat;
   background-size: 100% 100%;
+  
+} 
+.search-item-ip{
+  height: 60px;
+
 }
 .search-item-ip-w {
   width: 295px;
@@ -536,8 +541,12 @@ export default {
   .n-grid {
     height: 100%;
   }
+  .n-base-selection {
+    height: 100%;
+  }
   .n-base-selection .n-base-selection-label {
     background: none;
+    height: 100%;
   }
   .n-button--default-type {
     color: #fff;

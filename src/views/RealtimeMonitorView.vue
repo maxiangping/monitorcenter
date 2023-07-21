@@ -147,7 +147,19 @@ export default {
   color: #fff;
 }
 .search-item {
-  width: 200px;
+  width: 295px;
+  background: url('~@/assets/img/select_bg.png') center no-repeat;
+  background-size: 100% 100%;
+  height: 60px;
+}
+::v-deep {
+  .n-base-selection {
+    height: 100%;
+  }
+  .n-base-selection .n-base-selection-label {
+    height: 100%;
+    background: none;
+  }
 }
 .monitor-item {
   margin-bottom: 10px;

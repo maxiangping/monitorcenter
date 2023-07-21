@@ -81,7 +81,7 @@
         </div>
         <div class="col center">
           <div class="col-inner">
-            <div class="box h3">
+            <div class="box h3" @click="handleCloseItem">
               <n-select
                 class="search-item-symbel"
                     v-model:value="symbelValue"
@@ -89,13 +89,13 @@
                     :options="symbelOptions"
                     @update:value="changeSymbel"
                   />
-              <n-button class="btn-check" type="primary" @click="handlCheck">巡检</n-button>
+              <n-button class="btn-check" type="primary" @click.stop="handlCheck">巡检</n-button>
 
-              <div class="symbel-item" v-for="(sItem, index) in symbelList" :key="index" :style="{left: `${sItem.x}px`, top: `${sItem.y}%`}" @click="() =>handleClickItem(sItem)">
+              <div class="symbel-item" v-for="(sItem, index) in symbelList" :key="index" :style="{left: `${sItem.x}px`, top: `${sItem.y}%`}" @click.stop="() =>handleClickItem(sItem)">
                 <img class="item-img" v-if="!currentItem || (currentItem &&sItem.id !== currentItem.id)" :src="sItem.icon" />
                 <img class="item-img" v-if="currentItem && sItem.id === currentItem.id" :src="sItem.icon_active" />
               </div>
-              <div class="pop-symbel" v-if="showPop && currentItem" :style="{left: `${currentItem.x + 66}px`, top: `${currentItem.y}%`}">
+              <div class="pop-symbel" v-if="showPop && currentItem" :style="{left: `${currentItem.x + 66}px`, top: `${currentItem.y}%`}" @click.stop>
                   <div class="pop-inner">
                     <h4 class="pop-title">{{currentItem.name}}</h4>
                     <n-icon class="pop-close" size="30" @click="handleCloseItem">
@@ -233,6 +233,7 @@ export default {
         value: key,
       }
     })
+    symbelOptions.unshift({label: '全部', value: ''})
 
 
     const router = useRouter()
@@ -287,6 +288,7 @@ export default {
 
     const handlCheck = () => {
       //巡检
+      router.push({ name: 'OperateManage' })
     }
 
     const changeSymbel = () => {
