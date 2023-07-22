@@ -9,17 +9,32 @@
               v-model:value="ipValue"
               placeholder="请选择IP段"
               :options="ipOptions"
-              @change="search"
+              @update:value="search"
             />
-          <n-button type="primary"  @click="handleCheck">
-                  巡检
-                </n-button>
+          <n-button type="primary"  @click="handleCheck">巡检</n-button>
         </div>
         <div class="lane-content">
-          <div class="symbel-item" v-for="(sItem, index) in symbelList" :key="index" :style="{left: `${sItem.x}px`, top: `${sItem.y}%`}" @click.stop="() =>handleClickItem(sItem)">
+          <vue-draggable-resizable
+          v-for="(sItem, index) in symbelList"
+          :key="sItem.id"
+          @dragging="(x,y)=>onDragStart(sItem, x, y)"
+          :w="60"
+          :h="60"
+          :x="50 + index * 50"
+          :y="50"
+          
+          :grid="[10, 10]"
+          class-name="drag-item"
+          :disable-user-select="false"
+          :resizable="false"
+          >
+          <!-- @resizestop="onResize" @click="handleClickItem(sItem)" -->
+        
+          <div class="symbel-item"   >
                 <img class="item-img" v-if="!currentItem || (currentItem &&sItem.id !== currentItem.id)" :src="sItem.icon" />
                 <img class="item-img" v-if="currentItem && sItem.id === currentItem.id" :src="sItem.icon_active" />
-              </div>
+            </div>
+            </vue-draggable-resizable>
               <div class="pop-symbel" v-if="showPop && currentItem" :style="{left: `${currentItem.x + 66}px`, top: `${currentItem.y}%`}" @click.stop>
                   <div class="pop-inner">
                     <h4 class="pop-title">{{currentItem.name}}</h4>
@@ -77,13 +92,17 @@ import icon_COVI_active from '@assets/img/COVI_active.png'
 import icon_NO2 from '@assets/img/NO2.png'
 import icon_NO2_active from '@assets/img/NO2_active.png'
 import { IoSymbles, initXY } from './conf/sceneUtil'
+import VueDraggableResizable from 'vue-draggable-resizable/src/components/vue-draggable-resizable.vue'
+import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
 
 export default {
   name: 'OperateManageView',
   components: {
     Header,
     Menu,
+    VueDraggableResizable,
   },
+
   setup() {
 
     const ipOptions = ref([])
@@ -100,6 +119,19 @@ export default {
     const handleCheck = ()=>{
       //
     }
+
+    const search = () => {
+
+    }
+
+    const onDragStart = (sItem, x, y) => {
+      console.log('onDragStart',sItem, x, y)
+    }
+    const onDragEnd = (ev) => {
+      console.log('Weeee',ev)
+
+    }
+    
 
     const getIcon = (name, afterStr = '') => {
       switch(name) {
@@ -205,6 +237,9 @@ export default {
       currentItem,
       showPop,
       symbelList,
+      onDragStart,
+      onDragEnd,
+      search,
     }
   },
   
@@ -250,7 +285,7 @@ export default {
 }
 
 .symbel-item {
-  position: absolute;
+  // position: absolute;
   width: 61px;
   height: 61px;
   cursor: pointer;
