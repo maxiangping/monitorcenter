@@ -12,12 +12,12 @@ const requestMap = {};
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 
 axios.interceptors.request.use((config) => {
-		if(config.noneToken !== 1 ) {
-			const uin = sessionStor.get('session_uin')
-			const token = sessionStor.get('session_token')
-			config.headers.token = token || ''
-			config.headers.uin = uin || ''
-		}
+		// if(config.noneToken !== 1 ) {
+		// 	const uin = sessionStor.get('session_uin')
+		// 	const token = sessionStor.get('session_token')
+		// 	config.headers.token = token || ''
+		// 	config.headers.uin = uin || ''
+		// }
 		if(config.contentType) {
 			config.headers['Content-Type'] = config.contentType
 			// config.headers.transformRequest = [data => data]

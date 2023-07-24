@@ -215,6 +215,8 @@ import icon_COVI from '@assets/img/COVI.png'
 import icon_COVI_active from '@assets/img/COVI_active.png'
 import icon_NO2 from '@assets/img/NO2.png'
 import icon_NO2_active from '@assets/img/NO2_active.png'
+import {  getCurrentInstance } from 'vue'
+import { useMessage } from "naive-ui";
 
 
 export default {
@@ -223,7 +225,10 @@ export default {
     Header,
     Menu,
   },
-  setup() {
+  setup(ctx) {
+    const { proxy } = getCurrentInstance()
+    const message = useMessage()
+
     const ipOptions = ref([])
     const ipValue = ref('')
     const symbelValue = ref('') 
@@ -413,6 +418,20 @@ export default {
         ]
       }
     })
+
+    proxy.$axios
+				.post('/api/common/send_sms',{mobile: 1},{loading: '加载中...'})
+					.then((res) => {
+						if (res.statusCode == 0) {
+							console.log('请求成功', res)
+              message.success(res.message)
+							return;
+						}
+					})
+					.catch(() => {
+            message.error(res.error)
+            
+					});
   })
     return {
       handleToGoPage,
