@@ -20,9 +20,8 @@
           @dragging="(x,y)=>onDragStart(sItem, x, y)"
           :w="60"
           :h="60"
-          :x="50 + index * 50"
+          :x="sItem.x"
           :y="50"
-          
           :grid="[10, 10]"
           class-name="drag-item"
           :disable-user-select="false"
@@ -213,8 +212,8 @@ export default {
         name: IoSymbles[Number(key)],
         icon: getIcon(IoSymbles[key]),
         icon_active: getIcon(IoSymbles[key],'active'),
-        x: position.x,
-        y: position.y,
+        x: 0,
+        y: position.y * 1024 / 100,
         info: [
           {label: '设备编号', value: IoSymbles[key]},
           {label: '设备桩号', value: '09'},
@@ -256,8 +255,9 @@ export default {
 }
 .lane-content{
   position: relative;
-  background: url('~@/assets/img/lane_1.png') top no-repeat;
+  background: url('~@/assets/img/lane_all.png') top no-repeat;
   background-size: 100%;
+  overflow: hidden;
 
 }
 .search-box {

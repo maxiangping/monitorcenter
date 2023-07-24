@@ -159,7 +159,7 @@
                         <figcaption class="monitor-title">{{item.name}}</figcaption>
                         <div class=" monitor-child-list" v-for="(cItem,i) in item.monitors" :key="i">
                             <div class="img-box">
-                                <img :src="cItem.url" alt="" class="monitor-icon"/>
+                                <!-- <img :src="cItem.url" alt="" class="monitor-icon"/> -->
                             </div>
                             <p class="monitor-child-title">{{cItem.monitorName}}</p>
                         </div>
@@ -240,14 +240,14 @@ export default {
 
     // 设备信息
     const equipmentInfo = reactive({
-      total: 0,
-      fault: 0,
+      total: 2003,
+      fault: 45,
     })
 
     // 设备告警
     const equitWarningInfo = reactive({
-      hasDeal: 0,
-      noDeal: 0,
+      hasDeal: 54,
+      noDeal: 12,
     })
 
     // 设备告警列表
@@ -255,8 +255,8 @@ export default {
 
     // 事件告警
     const eventWarningInfo = reactive({
-      hasDeal: 0,
-      noDeal: 0,
+      hasDeal: 54,
+      noDeal: 65,
     })
 
     // 事件告警列表
@@ -391,7 +391,7 @@ export default {
         monitors: [{url: '', monitorName: '摄像头-03'},{url: '', monitorName: '摄像头-04'},],
       },
     ]
-    symbelList.value = Object.keys(IoSymbles).concat(Object.keys(IoSymbles)).map((key,index) => {
+    symbelList.value = Object.keys(IoSymbles).map((key,index) => {
       const position = getXY(index)
       return {
         id: key + `111`,
@@ -469,6 +469,8 @@ export default {
   background-color: rgba(8,16,80,0.62);
   border: 1px solid #397EF7;
   border-radius: 10px;
+  background: url('~@/assets/img/sd_bg.png') center no-repeat;
+  background-size: 100% 100%;
 }
 .h4 { height: 52%; background-image: url('~@/assets/img/bg-3.png');}
 .h5 { height: 44%; background-image: url('~@/assets/img/bg-4.png');}
@@ -652,6 +654,7 @@ export default {
       margin: 0 auto;
       width: 70%;
       min-height: 40px;
+      border: 1px solid @main-color2;
       .monitor-icon {
         width: 100%;
         height: 100%;
