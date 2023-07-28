@@ -80,6 +80,11 @@ export default {
   .n-input,.input__placeholder {
     text-align: left;
   }
+  .n-card > .n-card-header .n-card-header__main{
+    font-size: 24px;
+    text-align: center;
+    margin-left: 80px;
+  }
 }
 .menu-title {
   font-size: 20px;

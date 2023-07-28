@@ -5,13 +5,13 @@
       <section class="search-box flex x-space-between">
         <n-select
           class="search-item-ip"
-              v-model:value="ipValue"
+              v-model:value="projectValue"
               placeholder="请选择IP段"
-              :options="ipOptions"
+              :options="projectOptions"
               @update:value="changeIp"
             />
         <div class="warning-info">
-          <p class="warning-text">
+          <p class="warning-text-center">
             <img :src="warningIcon" alt="" class="icon"/>
             <span class="text">{{ warningCenterInfo }}</span>
           </p>
@@ -229,8 +229,8 @@ export default {
     const { proxy } = getCurrentInstance()
     const message = useMessage()
 
-    const ipOptions = ref([])
-    const ipValue = ref('')
+    const projectOptions = ref([])
+    const projectValue = ref('')
     const symbelValue = ref('') 
     const symbelOptions =  Object.keys(IoSymbles).map(key => {
       return {
@@ -288,7 +288,7 @@ export default {
       })
     }
     const changeIp = () =>{
-      console.log(ipValue)
+      console.log(projectValue)
     }
 
     const handlCheck = () => {
@@ -365,12 +365,12 @@ export default {
       return initXY[index] ?? { x: 0, y: 0 }
     }
     onMounted(() =>{
-      ipValue.value = '172.16.163.1'
+      projectValue.value = '工程1'
 
-      ipOptions.value = [
-        {label: '172.16.163.1',value: '172.16.163.1'},
-        {label: '172.16.163.2',value: '172.16.163.2'},
-        {label: '172.16.163.3',value: '172.16.163.3'},
+      projectOptions.value = [
+        {label: '工程1',value: '工程1'},
+        {label: '工程2',value: '工程2'},
+        {label: '工程3',value: '工程3'},
       ]
 
       warningCenterInfo.value = '1号隧道火灾告警提示！'
@@ -442,8 +442,8 @@ export default {
       eventWarningInfo,
       eventWarningList,
       monitorList,
-      ipOptions,
-      ipValue,
+      projectOptions,
+      projectValue,
       changeIp,
       warningIcon,
       warningCenterInfo,
@@ -722,8 +722,8 @@ export default {
   background-size: 100% 100%;
   height: 62px;
 }
-.warning-text {
-  text-align: cener;
+.warning-text-center {
+  text-align: center;
   line-height: 62px;
   .icon {
     position: relative;

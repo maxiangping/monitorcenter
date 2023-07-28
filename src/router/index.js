@@ -23,7 +23,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "PreplanManage" */ '../views/PreplanManageView.vue')
   },
   {
-    path: '/maintenance_manage',
+    path: '/project_view',
+    name: 'ProjectView',
+    component: () => import(/* webpackChunkName: "ProjectView" */ '../views/ProjectView.vue')
+  },
+  {
+    path: '/maintenance_manage/:id',
     name: 'MaintenanceManage',
     component: () => import(/* webpackChunkName: "MaintenanceManage" */ '../views/MaintenanceManageView.vue')
   },

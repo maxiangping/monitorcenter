@@ -38,7 +38,7 @@ export default {
       },
       {
         label: '运维管理',
-        value: 'MaintenanceManage',
+        value: 'ProjectView',
       },
       {
         label: '设置管理',

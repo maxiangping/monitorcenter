@@ -33,7 +33,7 @@
                           <n-input type="password" placeholder="请确认新密码" v-model:value="model.newPassword2"/>
                         </n-form-item-row>
                         <n-form-item-row label=" ">
-                          <n-button type="primary" block secondary strong>
+                          <n-button type="primary" block >
                         确定
                         </n-button>
                         </n-form-item-row>

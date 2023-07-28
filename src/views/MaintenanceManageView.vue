@@ -6,25 +6,27 @@
         <div class="search-box flex x-space-between">
           <n-select
               class="search-item-ip"
-              v-model:value="ipValue"
+              v-model:value="projectValue"
               placeholder="请选择IP段"
-              :options="ipOptions"
+              :options="projectOptions"
               @change="search"
             />
-          
+            <n-button type="primary"  @click="goback">
+                  返回
+                </n-button>
         </div>
         <div class="box-content flex xy-axis-center">
           <n-grid x-gap="24" cols="4" item-responsive>
             <n-grid-item>
               <div class="box">
                 <h4 class="menu-title">设备列表 
-                  <n-icon class="add-icon" size="40" title="添加设备" @click="addSene">
+                  <!-- <n-icon class="add-icon" size="40" title="添加设备" @click="addSene">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                       <path
                         d="M368.5 240H272v-96.5c0-8.8-7.2-16-16-16s-16 7.2-16 16V240h-96.5c-8.8 0-16 7.2-16 16 0 4.4 1.8 8.4 4.7 11.3 2.9 2.9 6.9 4.7 11.3 4.7H240v96.5c0 4.4 1.8 8.4 4.7 11.3 2.9 2.9 6.9 4.7 11.3 4.7 8.8 0 16-7.2 16-16V272h96.5c8.8 0 16-7.2 16-16s-7.2-16-16-16z"
                       />
                     </svg>
-                  </n-icon>
+                  </n-icon> -->
                 </h4>
                 <div class="box-inner">
                   <n-tree
@@ -164,7 +166,7 @@
           </n-grid>
         </div>
       </section>
-      <Menu currentPage="MaintenanceManage"/>
+      <Menu currentPage="ProjectView"/>
     </div>
   </div>
 </template>
@@ -189,6 +191,7 @@ import { IoSymbles, AttrType,addrVarOptions,
   serialToDrivsUint16,
   serialToUint16, } from './conf/sceneUtil'
 import { DeleteOutlined } from '@vicons/material'
+import { NButton, TreeOption } from 'naive-ui'
 
 const range = (start, end) => {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i)
@@ -220,8 +223,8 @@ export default {
 
     const editType  = ref(0)
 
-    const ipOptions = ref([])
-    const ipValue = ref('')
+    const projectOptions = ref([])
+    const projectValue = ref('')
 
     const treeData = ref([])
     const defaultExpandedKeys = ref([])
@@ -328,6 +331,10 @@ export default {
           return notIoOptions
         }
       })
+
+    const goback = ()=>{
+      router.push({name: 'ProjectView'})
+    }
       
     const initData = async () => {
       treeData.value = [
@@ -335,6 +342,12 @@ export default {
           label: '设备1', 
           key: '1',
           type: '1',
+          suffix: (value) =>
+            h(
+              NButton,
+              { text: true, type: 'primary', class: 'suffix-icon', onClick: () => addSene(value) },
+              { default: () => '添加' }
+            ),
           children: [
             { 
               label: '车道显示器', 
@@ -357,6 +370,12 @@ export default {
           label: '设备2', 
           key: '2',
           type: '1',
+          suffix: (value) =>
+            h(
+              NButton,
+              { text: true, type: 'primary', class: 'suffix-icon', onClick: () => addSene(value) },
+              { default: () => '添加' }
+            ),
           children: [
             { 
               label: '车道显示器', 
@@ -383,13 +402,14 @@ export default {
     const nodeProps = ({ option }) => {
         return {
           onClick() {
+            if(option.type === '1')return
             message.info("[Click] " + option.label);
           },
           
         };
       }
 
-      const addSene = () => {
+      const addSene = (ip) => {
         editType.value = 1
       }
       const editSene = () => {
@@ -443,19 +463,20 @@ export default {
 
 
     onMounted(async () => {
-      ipValue.value = '172.16.163.1'
-      ipOptions.value = [
-        {label: '172.16.163.1',value: '172.16.163.1'},
-        {label: '172.16.163.2',value: '172.16.163.2'},
-        {label: '172.16.163.3',value: '172.16.163.3'},
+      projectValue.value = '工程1'
+
+      projectOptions.value = [
+        {label: '工程1',value: '工程1'},
+        {label: '工程2',value: '工程2'},
+        {label: '工程3',value: '工程3'},
       ]
       await initData()
     })
 
 
     return {
-      ipOptions,
-      ipValue,
+      projectOptions,
+      projectValue,
       treeData,
       defaultExpandedKeys,
       nodeProps,
@@ -475,6 +496,7 @@ export default {
       changeItem,
       dynOptions,
       h,
+      goback,
       // qoptions, 
       // ioptions, 
       // aoptions,
@@ -550,6 +572,9 @@ export default {
   }
   .n-button--default-type {
     color: #fff;
+  }
+  .suffix-icon.n-button--primary-type .n-button__content{
+    color: @main-color1;
   }
 }
 .menu-title {

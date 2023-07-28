@@ -97,8 +97,14 @@ module.exports = defineConfig({
                     '^/api': ''
                 }
             },
-        }
-
+        },
+        client: {
+            overlay: {
+              errors: false,
+              warnings: false,
+              runtimeErrors: false,
+            },
+          },
     }, // 第三方插件配置
 
     pluginOptions: {

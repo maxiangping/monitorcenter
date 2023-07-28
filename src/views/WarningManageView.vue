@@ -92,7 +92,7 @@
           </div>
           <template #action>
             <n-button @click="hideDetail">取消</n-button>
-            <n-button type="primary" @click="dealConfirm">确定</n-button>
+            <n-button size="small" type="primary" @click="dealConfirm">确定</n-button>
           </template>
         </n-modal>
     </div>
@@ -149,7 +149,7 @@ export default {
     },
     {
       title: type === 1 ? "事件名称" : "设备名称",
-      key: "eventName"
+      key: "name"
     },
     {
       title: "站点名称",
@@ -261,7 +261,7 @@ export default {
       tabelData.value = [
         { 
           id: '11',
-          eventName: '策略1',
+          name: '策略1',
           addressName: 'dddd',
           warningInfo: '交通事故',
           warningTime: '2023-02-09 12:34:22',
@@ -269,7 +269,7 @@ export default {
           dealType: '待处理',
         },{ 
           id: '12',
-          eventName: '策略2',
+          name: '策略2',
           addressName: 'dddd',
           warningInfo: '交通事故',
           warningTime: '2023-02-09 12:34:22',
@@ -383,6 +383,9 @@ export default {
   }
   .n-button.mr-10 {
     margin-right: 10px;
+  }
+  .n-button--primary-type .n-button__content {
+    color: #333;
   }
 }
 .model-title {

@@ -6,9 +6,12 @@
         <div class="search-box flex x-space-between">
           <div class="search-list">
             <n-space>
-                <n-input class="search-item" placeholder="请输入预案策略名称" v-model:value="warningSearchForm.name"/>
+                <n-input class="search-item" placeholder="请输入工程名称" v-model:value="warningSearchForm.projectName"/>
                 <n-button type="primary"  @click="search">
                   查询
+                </n-button>
+                <n-button type="primary"  @click="addProject">
+                  + 新建工程
                 </n-button>
             </n-space>
           </div>
@@ -22,10 +25,10 @@
           :pagination="pagination"
         />
       </section>
-      <Menu currentPage="PreplanManage"/>
+      <Menu currentPage="ProjectView"/>
         <!-- 处理弹框 -->
-      <n-modal v-model:show="showEditModal" :mask-closable="false" preset="dialog" :showIcon="false" title="添加应急预案"
-      :style="{width: '50%', minWidth: '500px', maxWidth: '1000px' }">
+        <n-modal v-model:show="showEditModal" :mask-closable="false" preset="dialog" :showIcon="false" title="编辑工程"
+        :style="{width: '50%', minWidth: '500px', maxWidth: '1000px' }">
           <div class="detail-content" >
             <n-form
               ref="formRef"
@@ -34,43 +37,19 @@
               label-placement="left"
               label-width="auto"
               require-mark-placement="right-hanging"
-              :size="size"
               :style="{
                 maxWidth: '640px'
               }"
             >
-              <n-form-item label="预案名称" path="planName">
-                <n-input v-model:value="model.planName" placeholder="请输入预案名称" />
+              <n-form-item label="工程名称" path="projectName">
+                <n-input v-model:value="model.projectName" placeholder="请输入工程名称" />
               </n-form-item>
-              <n-form-item label="触发条件" path="trigger">
-                <n-select
-                    v-model:value="model.trigger"
-                    placeholder="请选择触发条件"
-                    :options="triggerOptions"
-                  />
+              <n-form-item label="车道数量" path="lanesNumber">
+                <n-input v-model:value="model.lanesNumber" placeholder="请输入车道数量" />
               </n-form-item>
-            <n-form-item label="设置联动设备" path="equits">
-            <n-dynamic-input v-model:value="model.equits" :on-create="onCreate">
-              <template #default="{ value }">
-                <div style="display: flex; align-items: center; width: 100%">
-                  <n-select
-                    class="mr-10"
-                    v-model:value="value.equitType"
-                    placeholder="请选择设备"
-                    :options="equitTypeOptions"
-                  />
-
-                  <n-select
-                    v-if="value.equitType !== '2'"
-                    v-model:value="value.status"
-                    placeholder="请选择设备状态"
-                    :options="getOptions(value.equitType)"
-                  />
-                  <n-input v-else v-model:value="value.status" type="text" placeholder="请输入提示文案"/>
-                </div>
-              </template>
-            </n-dynamic-input>
-            </n-form-item>
+              <n-form-item label="IP段" path="ipStr">
+                <n-input v-model:value="model.ipStr" type="textarea" placeholder="请输入IP段" />
+              </n-form-item>
             </n-form >
           </div>
           <template #action>
@@ -88,9 +67,10 @@ import Header from '@/components/Header.vue'
 import Menu from '@/components/Menu.vue'
 import { h,onMounted,reactive, ref } from 'vue'
 import {  NButton, useDialog, useMessage } from "naive-ui";
+import { useRouter } from 'vue-router'
 
 export default {
-  name: 'PreplanManage',
+  name: 'ProjectView',
   components: {
     Header,
     Menu,
@@ -99,50 +79,38 @@ export default {
     const formRef = ref(null)
     const dialog = useDialog()
     const message = useMessage()
+    const router = useRouter()
+
 
     const warningSearchForm = reactive({
-      name: '',
-      trigger: ''
+      projectName: '',
     })
 
-    const triggerOptions = [
-      {label: '火灾系统报警',value: '1'},
-      {label: '交通事故',value: '2'},
-      {label: '紧急停车',value: '3'},
-    ]
-
-    const equitTypeOptions = [
-    {label: '指示器',value: '1'},
-    {label: '情报板',value: '2'},
-    {label: '风机',value: '3'},
-    {label: '广播',value: '4'},
-    {label: '紧急电话',value: '5'},
-    ]
 
     const showEditModal = ref(false)
     const currentItem = ref(null)
     const model = ref({
-        planName: '',
-        trigger: '',
-        equits:[]
+        projectName: '',
+        lanesNumber: '',
+        ipStr:''
       })
 
       const rules = {
-        planName: {
+        projectName: {
           required: true,
           trigger: ['blur', 'input'],
-          message: '请输入预案名称'
+          message: '请输入工程名称'
         },
-        trigger: {
+        lanesNumber: {
           required: true,
           trigger: ['blur', 'change'],
-          message: '请选择触发条件'
+          message: '请输入车道数量'
         },
-        // equits: {
-        //   required: true,
-        //   trigger: ['blur', 'change'],
-        //   message: '请设置联动设备'
-        // },
+        ipStr: {
+          required: true,
+          trigger: ['blur', 'change'],
+          message: '请输入设备IP'
+        },
       }
 
     const columns =[
@@ -151,20 +119,25 @@ export default {
       key: "id"
     },
     {
-      title: "预案策略名称",
-      key: "planName"
+      title: "工程名称",
+      key: "projectName"
     },
     {
-      title: "触发条件",
-      key: "trigger"
+      title: "车道数量",
+      key: "lanesNumber"
     },
     {
-      title: "创建时间",
-      key: "createTime"
-    },
-    {
-      title: "告警状态",
-      key: "warningStatus"
+      title: "IP和端口",
+      key: "deviceList",
+      render(row) {
+        return h('span',{
+          class: 'ip-text',
+        },
+        { default: () => row.deviceList.reduce((str,item) => {
+          str += `${item.ip}:${item.port}；`
+          return str
+        }, '') })
+      }
     },
     {
       title: "操作",
@@ -185,9 +158,18 @@ export default {
             NButton,
             {
               size: 'small',
-              onClick: () => deletePlan(row)
+              class: 'mr-10',
+              onClick: () => deleteProject(row)
             },
             { default: () => "删除" }
+          ))
+          buttons.push(h(
+            NButton,
+            {
+              size: 'small',
+              onClick: () => gotoScene(row)
+            },
+            { default: () => "场景管理" }
           ))
           
         return buttons
@@ -227,22 +209,28 @@ export default {
       tabelData.value = [
         { 
           id: '11',
-          planName: '策略1',
-          trigger: '交通事故',
-          createTime: '2023-02-09 12:34:22',
-          warningStatus: '紧急事故',
+          projectName: '工程1',
+          lanesNumber: '4',
+          deviceList: [ // ip和端口列表
+            {"ip":"192.168.1.1","port":5002},
+            {"ip":"192.168.1.3","port":5002},
+            {"ip":"192.168.1.10","port":5002}
+            ],
         },{ 
           id: '12',
-          planName: '策略2',
-          trigger: '交通事故',
-          createTime: '2023-02-09 12:34:22',
-          warningStatus: '紧急事故',
+          projectName: '工程2',
+          lanesNumber: '4',
+          deviceList: [ // ip和端口列表
+            {"ip":"192.168.1.1","port":5002},
+            {"ip":"192.168.1.3","port":5002},
+            {"ip":"192.168.1.10","port":5002}
+            ],
         }
       ]
 
     }
 
-    const deletePlan = (row) => {
+    const deleteProject = (row) => {
         dialog.warning({
           title: '提示',
           content: '您确定删除吗？',
@@ -263,6 +251,13 @@ export default {
       currentItem.value = null
     }
 
+    const addProject = () => {
+      showEditModal.value = true
+      model.value = {
+
+      }
+    }
+
     const editPlan = (row) => {
       showEditModal.value = true
       currentItem.value = row
@@ -270,9 +265,9 @@ export default {
     
     const editConfirm =  (e) => {
       e.preventDefault()
-      // formRef.value?.validate( async(errors) => {
+      formRef.value?.validate( async(errors) => {
         
-      //     if (!errors) {
+          if (!errors) {
             const params = {
               id: currentItem.id,
               ...model.value,
@@ -281,55 +276,22 @@ export default {
             message.success('操作成功')
             hideEdit()
              search()
-        //   } 
-        //   else {
-        //     console.log(errors)
-        //     message.error('验证失败')
-        //   }
-        // })
+          } 
+          else {
+            console.log(errors)
+            message.error('验证失败')
+          }
+        })
 
     } 
 
-    const onCreate = () => {
-      return {
-        equitType: '1',
-        status: '',
-      }
-    }
-
-    const getOptions = (type = '') => {
-      let options = []
-      switch(type) {
-        case '1':
-          options = [
-            {label: '正行',value: '1'},
-            {label: '逆行',value: '2'},
-            {label: '禁行',value: '3'},
-            {label: '关闭',value: '4'},
-          ]
-          break;
-        case '3':
-          options = [
-            {label: '播放',value: '1'},
-            {label: '待机',value: '2'},
-          ]
-          break;
-        case '4':
-          options = [
-            {label: '播报',value: '1'},
-            {label: '待机',value: '2'},
-          ]
-          break;
-        case '5':
-          options = [
-            {label: '播报',value: '1'},
-            {label: '待机',value: '2'},
-          ]
-          break;
-        default: 
-          break
-      }
-      return options
+    const gotoScene = (row) => {
+      router.push({
+        name: 'MaintenanceManage',
+        params: {
+          id: row.id
+        }
+      })
     }
 
 
@@ -341,7 +303,6 @@ export default {
       formRef,
       model,
       rules,
-      triggerOptions,
       search,
       warningSearchForm,
       columns: columns,
@@ -351,9 +312,7 @@ export default {
       showEditModal,
       hideEdit,
       editConfirm,
-      onCreate,
-      equitTypeOptions,
-      getOptions,
+      addProject,
     }
   },
 }
@@ -386,7 +345,9 @@ export default {
   .n-button.mr-10, .n-select.mr-10  {
     margin-right: 10px;
   }
-  
+  .n-button--primary-type .n-button__content {
+    color: #333;
+  }
 }
 .model-title {
   font-size: 16px;
@@ -410,7 +371,7 @@ export default {
   }
 }
 .detail-content {
-  height: 400px;
+  height: 300px;
   overflow-y: auto;
 }
 

@@ -6,9 +6,9 @@
         <div class="search-box flex x-space-between">
           <n-select
           class="search-item-ip"
-              v-model:value="ipValue"
+              v-model:value="projectValue"
               placeholder="请选择IP段"
-              :options="ipOptions"
+              :options="projectOptions"
               @update:value="search"
             />
           <n-button type="primary"  @click="handleCheck">巡检</n-button>
@@ -104,8 +104,8 @@ export default {
 
   setup() {
 
-    const ipOptions = ref([])
-    const ipValue = ref('')
+    const projectOptions = ref([])
+    const projectValue = ref('')
 
     const symbelList = ref([])
 
@@ -198,11 +198,12 @@ export default {
     }
 
     onMounted(async () => {
-      ipValue.value = '172.16.163.1'
-      ipOptions.value = [
-        {label: '172.16.163.1',value: '172.16.163.1'},
-        {label: '172.16.163.2',value: '172.16.163.2'},
-        {label: '172.16.163.3',value: '172.16.163.3'},
+      projectValue.value = '工程1'
+
+      projectOptions.value = [
+        {label: '工程1',value: '工程1'},
+        {label: '工程2',value: '工程2'},
+        {label: '工程3',value: '工程3'},
       ]
       symbelList.value = Object.keys(IoSymbles).concat(Object.keys(IoSymbles)).map((key,index) => {
       const position = getXY(index)
@@ -228,8 +229,8 @@ export default {
     })
     })
     return {
-      ipOptions,
-      ipValue,
+      projectOptions,
+      projectValue,
       handleCheck,
       handleClickItem,
       handleCloseItem,
